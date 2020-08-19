@@ -7,8 +7,8 @@ LDI = 0b10000010
 PRN = 0b01000111
 # ADD = 0b10100000
 MUL = 0b10100010
-# PUSH = 0b01000101
-# POP = 0b01000110
+PUSH = 0b01000101
+POP = 0b01000110
 # CALL = 0b01010000
 # RET = 0b00010001
 
@@ -28,6 +28,8 @@ class CPU:
         self.ops[HLT] = self.HLT
         self.ops[MUL] = self.MUL
         self.running = False
+        self.ops[POP] = self.POP
+        self.ops[PUSH] = self.PUSH
         
     def LDI(self):
         address = self.ram[self.pc + 1]
@@ -48,6 +50,28 @@ class CPU:
         
     def HLT(self):
         self.running = False
+        
+    def PUSH(self):
+        self.reg[7] -= 1
+        
+        reg_num = self.ram[self.pc + 1]
+        value = self.reg[reg_num]
+        
+        top_of_stack_addr = self.reg[7]
+        self.ram[top_of_stack_addr] = value
+        
+        self.pc += 2
+        
+    def POP(self):
+        address_to_pop = self.reg[7]
+        value = self.ram[address_to_pop]
+        
+        reg_num = self.ram[self.pc + 1]
+        self.reg[reg_num] = value
+        
+        self.reg[7] += 1
+        
+        self.pc += 2
 
     def load(self):
         """Load a program into memory."""
