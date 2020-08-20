@@ -5,13 +5,13 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
-# ADD = 0b10100000
+ADD = 0b10100000
 MUL = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
-# CALL = 0b01010000
-# RET = 0b00010001
-
+CALL = 0b01010000
+RET = 0b00010001
+SP = 7
 
 class CPU:
     """Main CPU class."""
@@ -30,6 +30,11 @@ class CPU:
         self.running = False
         self.ops[POP] = self.POP
         self.ops[PUSH] = self.PUSH
+        self.ops[CALL] = self.CALL
+        self.ops[RET] = self.RET
+        self.ops[ADD] = self.ADD
+        
+        
         
     def LDI(self):
         address = self.ram[self.pc + 1]
@@ -72,7 +77,26 @@ class CPU:
         self.reg[7] += 1
         
         self.pc += 2
+        
+    def CALL(self):
+        ret_addr = self.pc + 2
+        self.reg[SP] -= 1
+        self.ram[self.reg[SP]] = ret_addr
+        
+        reg_num = self.ram[self.pc + 1]
+        self.pc = self.reg[reg_num]
+        
+    def RET(self):
+        ret_addr = self.ram[self.reg[SP]]
+        self.reg[SP] += 1
+        self.pc = ret_addr
 
+    def ADD(self):
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        self.alu('ADD', reg_a, reg_b)
+        self.pc += 3
+        
     def load(self):
         """Load a program into memory."""
 
@@ -161,7 +185,9 @@ class CPU:
         self.running = True
         
         while self.running:
+            
             ir = self.ram[self.pc]
+            
             self.ops[ir]()
         
         # while running:
