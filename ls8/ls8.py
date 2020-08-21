@@ -9,3 +9,6 @@ cpu = CPU()
 
 cpu.load()
 cpu.run()
+# cpu.trace()
+# print(cpu.reg)
+# print(cpu.ram)
