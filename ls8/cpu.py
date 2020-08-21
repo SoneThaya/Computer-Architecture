@@ -119,8 +119,8 @@ class CPU:
         
     def CMP(self):
         # `FL` bits: `00000LGE`
-        reg_a = self.ram[self.pc + 1]
-        reg_b = self.ram[self.pc + 2]
+        reg_a = self.reg[self.ram[self.pc + 1]]
+        reg_b = self.reg[self.ram[self.pc + 2]]
         
         # If they are equal, set the Equal `E` flag to 1
         if reg_a == reg_b:
